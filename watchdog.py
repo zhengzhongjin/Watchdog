@@ -34,7 +34,7 @@ def main():
 	delta = 0
 	
 	while True: 
-		print "delta = ", delta
+	#	print "delta = ", delta
 		delta += NUM_SAMPLES * (1.0/SAMPLING_RATE)
 		# 读入NUM_SAMPLES个取样
 		string_audio_data = stream.read(NUM_SAMPLES) 
@@ -56,12 +56,12 @@ def main():
 				blk_num += 1
 			else:
 				if (blk_num > 60):
-					print "blk::sum, num = ", blk_sum/blk_num, blk_num
+		#			print "blk::sum, num = ", blk_sum/blk_num, blk_num
 					push(blk_sum/blk_num)
 				blk_sum = 0
 				blk_num = 0
 		if (blk_num > 60):
-			print "blk::sum, num = ", blk_sum/blk_num, blk_num
+		#	print "blk::sum, num = ", blk_sum/blk_num, blk_num
 			push(blk_sum/blk_num)
 			
 		cnt = 0
@@ -76,7 +76,7 @@ def main():
 				print "-- shuia"
 				del event[0:i+1]
 				break 
-		print event
+	#	print event
 
 			
 if __name__ == '__main__':
