@@ -6,7 +6,7 @@ import pylab as pl
 
 #打开wav文件
 #open返回一个的是一个Wave_read类的实例，通过调用它的方法读取WAV文件的格式和数据
-f = wave.open(r"./a.wav","rb")
+f = wave.open(r"./dong1.wav","rb")
 
 # 读取格式信息
 # (nchannels, sampwidth, framerate, nframes, comptype, compname)

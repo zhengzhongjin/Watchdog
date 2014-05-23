@@ -4,14 +4,27 @@ import wave
 import numpy as np
 import pylab as pl
 
+# 绘制波形
+def plot_wave(array):
+	size = len(array)
+	time = np.arange(0, size) * (1.0/framerate)
+
+	pl.subplot(111) 
+	pl.plot(time, array)
+	pl.xlabel("time (seconds)")
+	pl.show()
+
+
 #打开wav文件
 #open返回一个的是一个Wave_read类的实例，通过调用它的方法读取WAV文件的格式和数据
-f = wave.open(r"./dong.wav","rb")
+f = wave.open(r"./dong1.wav","rb")
 
 # 读取格式信息
 # (nchannels, sampwidth, framerate, nframes, comptype, compname)
 params = f.getparams()
 nchannels, sampwidth, framerate, nframes = params[:4]
+
+# above info must be (1, 2, 8000, ...)
 
 print params
 
@@ -21,20 +34,8 @@ f.close()
 
 #将波形数据转换为数组
 wave_data = np.fromstring(str_data, dtype=np.short)
-#wave_data.shape = -1, 2
-#wave_data = wave_data.T
-time = np.arange(0, nframes) * (1.0 / framerate)
 
-freqs = np.linspace(0, framerate/2.0, nframes/2.0 + 1)
-xf = np.fft.rfft(wave_data)/sampwidth
-xfp = np.abs(xf)
+print len(wave_data)
 
-# 绘制波形
-pl.subplot(211) 
-pl.plot(time, wave_data)
-pl.xlabel("time (seconds)")
+plot_wave(wave_data[10000:15000])
 
-pl.subplot(212)
-print len(freqs), len(xfp)
-pl.plot(freqs, xfp)
-pl.show()
