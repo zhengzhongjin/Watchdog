@@ -45,9 +45,9 @@ print len(wave_data)
 
 #plot_graph(wave_data)
 
-shout = []
-
 upbound = get_upperbound(wave_data)
 shout = filter(lambda i: abs(wave_data[i]) > upbound, range(0, len(wave_data))) 
+#shout = map(lambda x: x/framerate, shout)
+plot_graph(map(lambda i: wave_data[i], shout), map(lambda i:i / framerate, shout))
 
 plot_graph(wave_data, 1.0/framerate)
