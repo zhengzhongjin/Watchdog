@@ -44,12 +44,8 @@ def main():
 		# 将读入的数据转换为数组
 		audio = np.fromstring(string_audio_data, dtype=np.short) 
 		
-		curr = []
-		for i in range(1, len(time)):
-			dy = audio[i] - audio[i-1]
-			if (abs(dy) > THRESHOLD):
-		#		print abs(dy)
-				curr.append(delta + time[i])
+		curr = filter(lambda i : abs(audio[i] - audio[i-1]) > THRESHOLD, range(1, len(time)))
+		curr = map(lambda i: delta + time[i], curr)
 
 		blk_sum = 0
 		blk_num = 0

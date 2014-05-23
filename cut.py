@@ -1,23 +1,29 @@
 # -*- coding: utf-8 -*-
+import sys
 import math
 import wave
 import numpy as np
 import pylab as pl
 
 # 绘制波形
-def plot_wave(array):
+
+def plot_graph(array, scale=1.0):
 	size = len(array)
-	time = np.arange(0, size) * (1.0/framerate)
+	time = np.arange(0, size)*scale
 
 	pl.subplot(111) 
 	pl.plot(time, array)
-	pl.xlabel("time (seconds)")
+#	pl.xlabel("time (seconds)")
 	pl.show()
 
+def get_upperbound(array):
+	array = abs(array)
+	array = sorted(array, reverse=True)
+	return array[len(array)/100]
 
 #打开wav文件
 #open返回一个的是一个Wave_read类的实例，通过调用它的方法读取WAV文件的格式和数据
-f = wave.open(r"./dong2.wav","rb")
+f = wave.open(r"./dong3.wav","rb")
 
 # 读取格式信息
 # (nchannels, sampwidth, framerate, nframes, comptype, compname)
@@ -37,17 +43,12 @@ wave_data = np.fromstring(str_data, dtype=np.short)
 
 print len(wave_data)
 
-plot_wave(wave_data)
+#plot_graph(wave_data)
 
-start = -1
-end = 0
+shout = []
 
-for i in range(0, len(wave_data)):
-	if abs(wave_data[i]) > 20000:
-		if start < 0 :
-			start = i
-		else :
-			end = i
+upbound = get_upperbound(wave_data)
+shout = filter(lambda i: abs(wave_data[i]) > upbound, range(0, len(wave_data))) 
+print len(shout)
 
-print "start, end = ", start, end
-#plot_wave(wave_data[start:end])
+plot_graph(wave_data, 1.0/framerate)
