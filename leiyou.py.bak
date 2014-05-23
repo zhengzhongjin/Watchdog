@@ -1,0 +1,47 @@
+# -*- coding: utf-8 -*-
+import thread
+from pyaudio import PyAudio, paInt16 
+import numpy as np 
+from datetime import datetime 
+import wave 
+import pylab as pl
+
+
+NUM_SAMPLES = 8000      # pyAudio内部缓存的块的大小
+SAMPLING_RATE = 8000    # 取样频率
+LEVEL = 1500            # 声音保存的阈值
+COUNT_NUM = 20          # NUM_SAMPLES个取样之内出现COUNT_NUM个大于LEVEL的取样则记录声音
+SAVE_LENGTH = 8         # 声音记录的最小长度：SAVE_LENGTH * NUM_SAMPLES 个取样
+
+# 开启声音输入
+pa = PyAudio() 
+stream = pa.open(format=paInt16, channels=1, rate=SAMPLING_RATE, input=True, 
+	frames_per_buffer=NUM_SAMPLES) 
+
+time = np.arange(0, NUM_SAMPLES) * (1.0/SAMPLING_RATE);
+
+pl.subplot(111)
+
+Y_MIN = -35537
+Y_MAX =  35537
+
+def Loop():
+	pl.hold(False)
+	while True: 
+		print "--" 
+		# 读入NUM_SAMPLES个取样
+		string_audio_data = stream.read(NUM_SAMPLES) 
+		# 将读入的数据转换为数组
+		audio_data = np.fromstring(string_audio_data, dtype=np.short) 
+
+		print len(time), len(audio_data)
+		pl.ylim(Y_MIN, Y_MAX) 
+		pl.plot(time, audio_data)
+		pl.axis((0, NUM_SAMPLES/SAMPLING_RATE, Y_MIN, Y_MAX))
+		pl.draw()
+
+
+print "run..."
+thread.start_new_thread(Loop, ())
+
+pl.show()

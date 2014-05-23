@@ -3,7 +3,6 @@ import os
 import thread
 from pyaudio import PyAudio, paInt16 
 import numpy as np 
-from datetime import datetime 
 import wave 
 import pylab as pl
 
@@ -22,10 +21,7 @@ def push(v):
 		del event[0]
 
 def play():
-#	os.system("aplay shuia.wav")
-#	os.system("aplay b.wav")
-	print "***------ shuia ------***"
-
+	os.system("aplay shuia.wav")
 	
 def main():
 	# 开启声音输入
@@ -58,16 +54,15 @@ def main():
 				blk_sum += curr[i]
 				blk_num += 1
 			else:
-				if (blk_num > 60 and blk_num < 400):
+				if (blk_num > 60):
 					print "blk::sum, num = ", blk_sum/blk_num, blk_num
 					push(blk_sum/blk_num)
 				blk_sum = 0
 				blk_num = 0
-
-		if (blk_num > 60 and blk_num < 400):
+		if (blk_num > 60):
 			print "blk::sum, num = ", blk_sum/blk_num, blk_num
 			push(blk_sum/blk_num)
-
+			
 		cnt = 0
 		for i in range(1, len(event)):
 			if (event[i] - event[i-1] < 0.4):
@@ -77,9 +72,10 @@ def main():
 
 			if (cnt >= 2):
 				thread.start_new_thread(play, ())
+				print "-- shuia"
 				del event[0:i+1]
 				break 
-	#	print event
+		print event
 
 			
 if __name__ == '__main__':
