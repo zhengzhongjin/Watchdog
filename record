@@ -1,0 +1,2 @@
+#!/bin/bash
+arecord --rate=8000 -f S16_LE > $1
