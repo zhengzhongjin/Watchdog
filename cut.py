@@ -23,7 +23,7 @@ def get_upperbound(array):
 
 #打开wav文件
 #open返回一个的是一个Wave_read类的实例，通过调用它的方法读取WAV文件的格式和数据
-f = wave.open(r"./dong3.wav","rb")
+f = wave.open(r"./dong1.wav","rb")
 
 # 读取格式信息
 # (nchannels, sampwidth, framerate, nframes, comptype, compname)
@@ -47,7 +47,33 @@ print len(wave_data)
 
 upbound = get_upperbound(wave_data)
 shout = filter(lambda i: abs(wave_data[i]) > upbound, range(0, len(wave_data))) 
-#shout = map(lambda x: x/framerate, shout)
-plot_graph(map(lambda i: wave_data[i], shout), map(lambda i:i / framerate, shout))
+shout = map(lambda i: i*1.0 / framerate, shout)
 
-plot_graph(wave_data, 1.0/framerate)
+maxdelta = 0.01
+s = 0
+n = 0
+blk = []
+for i in range(1, len(shout)):
+	if abs(shout[i] - shout[i-1]) > maxdelta:
+		if n > 0:
+			blk.append(s / n)
+		s = shout[i]
+		n = 1
+	else:
+		s += shout[i]
+		n += 1
+if n > 0:
+	blk.append(s / n)
+print blk 
+if len(blk) != 3:
+	print "block != 3"
+
+begin = shout[0]
+end = ((blk[2] - blk[0]) / 2.0) * 3.0 + begin
+
+print "begin, end = ", begin, end
+
+cutout = filter(lambda i: i*1.0/framerate >= begin and i*1.0/framerate <= end, range(0, len(wave_data)))
+cutout = map(lambda i: wave_data[i], cutout)
+
+plot_graph(cutout, 1.0/framerate)
