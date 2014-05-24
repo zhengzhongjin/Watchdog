@@ -12,8 +12,11 @@ def del_low_freq(value, freq):
 	return value
 
 def dot(a, b):
-	return reduce(lambda x, i:x + a[i] * b[i].conjugate(), range(0, min(len(a), len(b))))
-
+	res = 0.0
+	for i in range(0, len(a)/2):
+		res += a[i] * b[i].conjugate()
+	return res
+	
 wave_data = cut.get_wave(r"./dong1.wav")
 wave_data = cut.get_cut(wave_data)
 cut.plot_graph(wave_data)

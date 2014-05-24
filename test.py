@@ -1,40 +1,47 @@
 # -*- coding: utf-8 -*-
+import os
 import math
-import wave
-import numpy as np
+import thread
+from pyaudio import PyAudio, paInt16 
+import numpy as np 
+from datetime import datetime 
+import wave 
 import pylab as pl
+import cut
 
-#打开wav文件
-#open返回一个的是一个Wave_read类的实例，通过调用它的方法读取WAV文件的格式和数据
-f = wave.open(r"./dong1.wav","rb")
 
-# 读取格式信息
-# (nchannels, sampwidth, framerate, nframes, comptype, compname)
-params = f.getparams()
-nchannels, sampwidth, framerate, nframes = params[:4]
+WINDOWSIZE	=	0
+BUFFSIZE	= 	0
 
-print params
+def play():
+	print "***------ shuia ------***"
 
-# 读取波形数据
-str_data = f.readframes(nframes)
-f.close()
+def dot(a, b):
+	res = 0.0
+	for i in range(0, len(a)/8):
+		res += a[i] * b[i].conjugate()
+	return res
+	
+def get_standard():
+	global WINDOWSIZE
+	std_wave = cut.get_wave(r"./dong1.wav")
+	std_wave = cut.get_cut(std_wave)
+	WINDOWSIZE = len(std_wave)
+	print "WINDOWSIZE", WINDOWSIZE
+	return np.fft.fft(std_wave)
+	
 
-#将波形数据转换为数组
-wave_data = np.fromstring(str_data, dtype=np.short)
-#wave_data.shape = -1, 2
-#wave_data = wave_data.T
-time = np.arange(0, nframes) * (1.0 / framerate)
+def main():
+	# 开启声音输入
+	f_std = get_standard()
+	buff = cut.get_wave(r"./dong3.wav")
+	max_like = 0.0
+	l1 = math.sqrt(abs(dot(f_std, f_std)))
+	for i in range(0, len(buff) - WINDOWSIZE):
+		f_cur = np.fft.fft(buff[i:i+WINDOWSIZE])
+		like = abs(dot(f_cur, f_std))/math.sqrt(abs(dot(f_cur, f_cur)))/l1
+		max_like = max(max_like, like)
+	print max_like
 
-freqs = np.linspace(0, framerate/2.0, nframes/2.0 + 1)
-xf = np.fft.rfft(wave_data)/sampwidth2
-xfp = np.abs(xf)
-
-# 绘制波形
-pl.subplot(211) 
-pl.plot(time, wave_data)
-pl.xlabel("time (seconds)")
-
-pl.subplot(212)
-print len(freqs), len(xfp)
-pl.plot(freqs, xfp)
-pl.show()
+if __name__ == '__main__':
+	main()

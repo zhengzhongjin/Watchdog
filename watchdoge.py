@@ -10,7 +10,7 @@ import pylab as pl
 import cut
 
 
-NUM_SAMPLES	=	8000	# 内部缓存的块的大小
+NUM_SAMPLES	=	16000	# 内部缓存的块的大小
 SAMPLING_RATE	=	8000	# 取样频率
 MAXQUEUE	=	6
 MAXDELTA	=	0.08
@@ -28,7 +28,10 @@ def play():
 	print "***------ shuia ------***"
 
 def dot(a, b):
-	return reduce(lambda x, i:x + a[i] * b[i].conjugate(), range(0, min(len(a), len(b))))
+	res = 0.0
+	for i in range(0, len(a)/2):
+		res += a[i] * b[i].conjugate()
+	return res
 	
 def get_standard():
 	global WINDOWSIZE
@@ -49,20 +52,18 @@ def main():
 	stream = pa.open(format=paInt16, channels=1, rate=SAMPLING_RATE, input=True, 
 		frames_per_buffer=NUM_SAMPLES);
 
-	time = np.arange(0, NUM_SAMPLES) * (1.0/SAMPLING_RATE);
-	
-	while True: 
+	l1 = math.sqrt(abs(dot(f_std, f_std)))
+	while 1: 
 		audio = np.fromstring(stream.read(NUM_SAMPLES), dtype=np.short)
 		print "get"
 		buff[0:BUFFSIZE/3] = buff[BUFFSIZE*2/3:BUFFSIZE]
 		buff[BUFFSIZE*2/3:BUFFSIZE] = audio
 
 		max_like = 0.0
-		l1 = math.sqrt(dot(f_std, f_std))
 		for i in range(0, BUFFSIZE - WINDOWSIZE):
-			if i % 1000 == 0:
+			if i % 10 == 0:
 				f_cur = np.fft.fft(buff[i:i+WINDOWSIZE])
-				like = abs(dot(f_cur, f_std))/math.sqrt(dot(f_cur, f_cur))/l1
+				like = abs(dot(f_cur, f_std))/math.sqrt(abs(dot(f_cur, f_cur)))/l1
 				max_like = max(max_like, like)
 		print max_like
 

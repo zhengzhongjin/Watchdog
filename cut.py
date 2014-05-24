@@ -45,34 +45,19 @@ def get_wave(fstr):
 	return wave_data
 
 def get_cut(wave_data):
+	maxdelta = 0.01
 	upbound = _get_upperbound(wave_data)
 	shout = filter(lambda i: abs(wave_data[i]) > upbound, range(0, len(wave_data))) 
 	shout = map(lambda i: float(i) / framerate, shout)
 
-	maxdelta = 0.01
-	s = 0
-	n = 0
-	blk = []
+	begin = shout[0]
 	for i in range(1, len(shout)):
 		if abs(shout[i] - shout[i-1]) > maxdelta:
-			if n > 0:
-				blk.append(s / n)
-			s = shout[i]
-			n = 1
+			break
 		else:
-			s += shout[i]
-			n += 1
-	if n > 0:
-		blk.append(s / n)
-	print blk 
-	if len(blk) != 3:
-		print "block != 3"
-		sys.exit(-1)
-
-	begin = shout[0]
-	end = ((blk[2] - blk[0]) / 2.0) * 3.0 + begin
-
+			end = shout[i]
 	print "get_wave >>> begin, end = ", begin, end
+	end += 0.01
 
 	cutout = filter(lambda i: float(i)/framerate >= begin and float(i)/framerate <= end, range(0, len(wave_data)))
 	cutout = map(lambda i: wave_data[i], cutout)
@@ -82,6 +67,7 @@ def get_cut(wave_data):
 def main():
 	global framerate
 	wave_data = get_wave(r"./dong.wav")
+	plot_graph(wave_data, 1.0/framerate)
 	wave_data = get_cut(wave_data)
 	plot_graph(wave_data, 1.0/framerate)
 
