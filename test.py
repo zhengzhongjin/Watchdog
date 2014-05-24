@@ -26,7 +26,7 @@ wave_data = np.fromstring(str_data, dtype=np.short)
 time = np.arange(0, nframes) * (1.0 / framerate)
 
 freqs = np.linspace(0, framerate/2.0, nframes/2.0 + 1)
-xf = np.fft.rfft(wave_data)/sampwidth
+xf = np.fft.rfft(wave_data)/sampwidth2
 xfp = np.abs(xf)
 
 # 绘制波形

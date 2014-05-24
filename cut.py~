@@ -82,8 +82,8 @@ def get_cut(wave_data):
 def main():
 	global framerate
 	wave_data = get_wave(r"./dong.wav")
-	cutout = get_cut(wave_data)
-	plot_graph(cutout, 1.0/framerate)
+#	wave_data = get_cut(wave_data)
+	plot_graph(wave_data, 1.0/framerate)
 
 if __name__ == "__main__":
 	main()
